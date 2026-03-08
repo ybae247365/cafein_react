@@ -33,33 +33,18 @@ const ManualList = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 모드에 따른 분기 처리
+    // plan.md 규칙: isMockMode 체크
     if (isMockMode) {
-      console.log("⚠️ Mock 모드: 가짜 데이터를 사용합니다.");
-      setMenus(MOCK_MENUS);
+      setMenus(MOCK_DATA); // 기존에 있던 가짜 데이터 그대로 사용
     } else {
-      console.log("🚀 실전 모드: 서버에서 데이터를 가져옵니다.");
       api
         .get("/api/manual/list")
-        .then((response) => setMenus(response.data))
+        .then((res) => setMenus(res.data))
         .catch((err) => {
-          console.error("데이터 로딩 실패, Mock 데이터로 대체합니다.", err);
-          setMenus(MOCK_MENUS); // 서버 에러 시에도 가짜 데이터를 보여주면 안전합니다!
+          console.error("서버 연결 실패, Mock 데이터로 전환:", err);
+          setMenus(MOCK_DATA); // 서버 에러 시에도 서비스가 굴러가게 Mock 사용
         });
     }
-
-    // Mock 모드일 때는 가짜 데이터 사용
-    // fetch 대신 api.get 사용
-    // baseURL이 이미 설정되어 있어 뒤쪽 경로만 적음
-    api
-      .get("/api/manual/list")
-      .then((response) => {
-        // axios는 데이터가 response.data에 들어있음
-        setMenus(response.data);
-      })
-      .catch((err) => {
-        console.error("데이터 로딩 실패:", err);
-      });
   }, []);
 
   return (
