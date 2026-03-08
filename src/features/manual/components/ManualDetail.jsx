@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+// 1. 공용 axios 인스턴스 불러오기 (plan.md 규칙)
+import api from "../../../lib/api";
 
 const ManualDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
-  const [activeTab, setActiveTab] = useState("recipe"); // 'recipe' 또는 'equipment'
+  const [activeTab, setActiveTab] = useState("recipe");
 
   useEffect(() => {
-    // 백엔드 API 호출 (아까 만든 상세 보기 엔드포인트)
-    fetch(`http://localhost:8001/api/manual/${id}`)
-      .then((res) => res.json())
-      .then((data) => setItem(data))
+    // 2. fetch 대신 api(axios) 사용
+    // api.get()은 VITE_API_BASE_URL이 기본으로 잡혀 있어 경로만 적음
+    api
+      .get(`/api/manual/${id}`)
+      .then((response) => {
+        // axios는 데이터가 response.data 안에 들어있음
+        setItem(response.data);
+      })
       .catch((err) => console.error("상세 데이터 로드 실패:", err));
   }, [id]);
 
@@ -29,7 +35,7 @@ const ManualDetail = () => {
           backgroundColor: "white",
           cursor: "pointer",
           fontWeight: "bold",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.05)", // 살짝 입체감을 줬어요!
+          boxShadow: "0 2px 4px rgba(0,0,0,0.05)", // 입체감
         }}
       >
         ← 목록으로 돌아가기
